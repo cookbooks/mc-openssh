@@ -1,10 +1,8 @@
 #
-# Copyright 2004 Sun Microsystems, Inc.  All rights reserved.
-# Use is subject to license terms.
+# Copyright (c) 2001, 2010, Oracle and/or its affiliates. All rights reserved.
 #
-# ident	"@(#)sshd_config	1.8	04/05/10 SMI"
+# Configuration file for sshd(1m) (see also sshd_config(4))
 #
-# Configuration file for sshd(1m)
 
 # Protocol versions supported
 #
@@ -32,32 +30,28 @@ Protocol 2
 # Listen port (the IANA registered port number for ssh is 22)
 Port <%= @port %>
 
+# Don't use reverse DNS for connecting clients
+LookupClientHostnames no
+VerifyReverseMapping no
+
 # The default listen address is all interfaces, this may need to be changed
 # if you wish to restrict the interfaces sshd listens on for a multi homed host.
 # Multiple ListenAddress entries are allowed.
 
 # IPv4 only
-#ListenAddress 0.0.0.0
-# IPv4 & IPv6
 <% if @internal_ip %>
 ListenAddress <%= @internal_ip %>
 <% else %>
 ListenAddress ::
 <% end %>
-
-LookupClientHostnames no
-VerifyReverseMapping no
-
-# Port forwarding
-AllowTcpForwarding yes
-
-# If port forwarding is enabled, specify if the server can bind to INADDR_ANY. 
+# If port forwarding is enabled (default), specify if the server can bind to
+# INADDR_ANY. 
 # This allows the local port forwarding to work when connections are received
 # from any remote host.
 GatewayPorts no
 
 # X11 tunneling options
-X11Forwarding no
+X11Forwarding yes
 X11DisplayOffset 10
 X11UseLocalhost yes
 
@@ -88,12 +82,8 @@ LogLevel info
 
 # Host private key files
 # Must be on a local disk and readable only by the root user (root:sys 600).
-HostKey /etc/ssh/ssh_host_rsa_key
-HostKey /etc/ssh/ssh_host_dsa_key
-
-# Default Encryption algorithms and Message Authentication codes
-#Ciphers	aes128-ctr,aes128-cbc,arcfour,3des-cbc,blowfish-cbc
-#MACS	hmac-md5,hmac-sha1,hmac-sha1-96,hmac-md5-96
+HostKey /var/ssh/ssh_host_rsa_key
+HostKey /var/ssh/ssh_host_dsa_key
 
 # Length of the server key
 # Default 768, Minimum 512
@@ -114,8 +104,8 @@ LoginGraceTime 600
 
 # Maximum number of retries for authentication
 # Default is 6. Default (if unset) for MaxAuthTriesLog is MaxAuthTries / 2
-MaxAuthTries	6
-MaxAuthTriesLog	3
+MaxAuthTries    6
+MaxAuthTriesLog 3
 
 # Are logins to accounts with empty passwords allowed.
 # If PermitEmptyPasswords is no, pass PAM_DISALLOW_NULL_AUTHTOK 
@@ -128,23 +118,14 @@ PermitUserEnvironment yes
 # To disable tunneled clear text passwords, change PasswordAuthentication to no.
 PasswordAuthentication <%= @password_authentication %>
 
-# Use PAM via keyboard interactive method for authentication.
-# Depending on the setup of pam.conf(4) this may allow tunneled clear text
-# passwords even when PasswordAuthentication is set to no. This is dependent
-# on what the individual modules request and is out of the control of sshd
-# or the protocol.
-PAMAuthenticationViaKBDInt no
-
 # Are root logins permitted using sshd.
 # Note that sshd uses pam_authenticate(3PAM) so the root (or any other) user
 # maybe denied access by a PAM module regardless of this setting.
 # Valid options are yes, without-password, no.
-
 PermitRootLogin <%= @permit_root_login %>
 
 # sftp subsystem
-Subsystem	sftp	/usr/lib/ssh/sftp-server
-
+Subsystem       sftp    internal-sftp
 
 # SSH protocol v1 specific options
 #
@@ -169,6 +150,11 @@ RhostsRSAAuthentication no
 # Is pure RSA authentication allowed.
 # Default is yes
 RSAAuthentication yes
+
+# Disable GSS since we don't need it and it slows down login
+GSSAPIAuthentication no
+GSSAPIKeyExchange no
+
 DenyGroups deniedssh
 
 PubKeyPlugin libsmartsshd.so
