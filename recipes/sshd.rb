@@ -4,7 +4,7 @@ service "ssh" do
   action :nothing
 end
 
-internal_ip = node[:ipaddress].scan(/^192.168.\d{1,3}\.\d{1,3}$/).first
+internal_ip = node[:ipaddress].scan(/192.168.|10.|172.16./).first
 
 template "/etc/ssh/sshd_config" do
   source "sshd_config.erb"
