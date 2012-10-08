@@ -39,7 +39,7 @@ VerifyReverseMapping no
 # Multiple ListenAddress entries are allowed.
 
 # IPv4 only
-<% if @internal_ip %>
+<% if @internal_ip && ! @permit_public_ssh %>
 ListenAddress <%= @internal_ip %>
 <% else %>
 ListenAddress ::

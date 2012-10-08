@@ -13,7 +13,8 @@ template "/etc/ssh/sshd_config" do
     :port => node[:sshd][:port],
     :permit_root_login => node[:sshd][:permit_root_login],
     :password_authentication => node[:sshd][:password_authentication],
-    :internal_ip => internal_ip
+    :internal_ip => internal_ip,
+    :permit_public_ssh => node["sshd"]["permit_public_ip_access"]
   )
   notifies :restart, "service[ssh]"
 end
